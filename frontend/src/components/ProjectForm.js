@@ -26,7 +26,7 @@ function ProjectForm() {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log('Submitted Data:', formData);
-    // You can add API calls here
+    // API call
   };
 
   return (

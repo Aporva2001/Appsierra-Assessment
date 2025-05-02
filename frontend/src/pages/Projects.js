@@ -1,83 +1,131 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import NewProject from '../components/NewProject';
-import ProjectForm from '../components/ProjectForm';
 import { Box, Stack, TextField } from '@mui/material';
+import ProjectItem from '../components/ProjectItem';
 
 const Projects = () => {
-    const [showModal, setShowModal] = useState(false);
+  const [projects, setProjects] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [editingIndex, setEditingIndex] = useState(null);
 
-    const [formData, setFormData] = useState({
-        name: "",
-        description: ""
-    })
-        const handleClick = ()=>{
-            setShowModal(true);
-        }
-    
-        const handleClose =()=>{
-            console.log("hello")
-            setShowModal(false);
-        }
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
+  });
 
-        const handleChange = (e)=>{
-            const {name, value} = e.target;
-            setFormData((prevData)=>({
-                ...prevData,
-                [name]: value 
-            }))
-        }
-        const handleSubmit = (e) =>{
-            e.preventDefault();
-            console.log(formData)
-            handleClose();
+  useEffect(() => {
+    console.log('Projects updated:', projects);
+  }, [projects]);
 
-        }
-        const actionBar= <div>
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
-  <Button
-    variant="contained"
-    color="success"
-    type="submit"
-    onSubmit={handleSubmit}
-  >
-    Add
-  </Button>
-</Box>
-    </div>
-    const modal= <NewProject onClose= {handleClose} >
-       <form onSubmit={handleSubmit}>
-            <Stack spacing={3}>
-              <TextField
-                label="Project Name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                fullWidth
-                required
-              />
-              <TextField
-                label="Project Description"
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                multiline
-                rows={4}
-                fullWidth
-                required
-              />
-              {actionBar}
-            </Stack>
-          </form>
-        </NewProject>
+  const handleClick = () => {
+    setFormData({ name: '', description: '' });
+    setEditingIndex(null); 
+    setShowModal(true);
+  };
+
+  const handleClose = () => {
+    setShowModal(false);
+    setEditingIndex(null);
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (editingIndex !== null) {
+      const updated = [...projects];
+      updated[editingIndex] = formData;
+      setProjects(updated);
+    } else {
+      if (projects.length < 4) {
+        setProjects((prev) => [...prev, formData]);
+      }
+    }
+
+    setFormData({ name: '', description: '' });
+    setEditingIndex(null);
+    handleClose();
+  };
+
+  const handleDelete = (project) => {
+    const filtered = projects.filter((p) => p.name !== project.name);
+    setProjects(filtered);
+  };
+
+  const handleModify = (project, index) => {
+    setFormData(project);
+    setEditingIndex(index);
+    setShowModal(true);
+  };
+
+  const actionBar = (
+    <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
+      <Button variant="contained" color="success" type="submit">
+        {editingIndex !== null ? 'Update' : 'Add'}
+      </Button>
+    </Box>
+  );
+
+  const modal = (
+    <NewProject onClose={handleClose}>
+      <form onSubmit={handleSubmit}>
+        <Stack spacing={3}>
+          <TextField
+            label="Project Name"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            fullWidth
+            required
+          />
+          <TextField
+            label="Project Description"
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            multiline
+            rows={4}
+            fullWidth
+            required
+          />
+          {actionBar}
+        </Stack>
+      </form>
+    </NewProject>
+  );
 
   return (
     <div>
-        <h1>Projects</h1>
-        <Button variant="contained" onClick={handleClick}>Add a Project</Button>
-        {showModal && modal}
-    </div>
-  )
-}
+      <h1>Projects</h1>
+      <Button
+        variant="contained"
+        onClick={handleClick}
+        disabled={projects.length >= 4 && editingIndex === null}
+      >
+        Add a Project
+      </Button>
 
-export default Projects
+      {projects.map((project, index) => (
+        <ProjectItem
+          key={index}
+          name={project.name}
+          description={project.description}
+          onDelete={() => handleDelete(project)}
+          onModify={() => handleModify(project, index)}
+        />
+      ))}
+
+      {showModal && modal}
+    </div>
+  );
+};
+
+export default Projects;

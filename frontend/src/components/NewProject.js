@@ -1,13 +1,23 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Box from '@mui/material/Box';
 import ReactDOM from 'react-dom'
 
 
 const NewProject = ({onClose,actionBar,children}) => {
-
+    useEffect(() => {
+        // Disable background scroll
+        const originalOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+    
+        // Re-enable on unmount
+        return () => {
+          document.body.style.overflow = originalOverflow;
+        };
+      }, []);
 return ReactDOM.createPortal(
 <div>
         <Box
+        onClick= {onClose}
       sx={{
         position: 'absolute',
         top: 0,
