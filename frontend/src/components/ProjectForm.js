@@ -9,7 +9,7 @@ import {
   Stack,
 } from '@mui/material';
 
-function ProjectForm() {
+function ProjectForm({ onSubmit }) {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -26,7 +26,8 @@ function ProjectForm() {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log('Submitted Data:', formData);
-    // API call
+    onSubmit?.(formData); // Optional onSubmit prop
+    setFormData({ name: '', description: '' }); // Reset form
   };
 
   return (

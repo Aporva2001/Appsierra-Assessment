@@ -3,24 +3,26 @@ import Button from '@mui/material/Button';
 import NewProject from '../components/NewProject';
 import { Box, Stack, TextField } from '@mui/material';
 import ProjectItem from '../components/ProjectItem';
+import { useNavigate } from 'react-router-dom';
 
 const Projects = () => {
-  const [projects, setProjects] = useState([]);
-  const [showModal, setShowModal] = useState(false);
-  const [editingIndex, setEditingIndex] = useState(null);
-
-  const [formData, setFormData] = useState({
-    name: '',
-    description: '',
+  const [projects, setProjects] = useState(() => {
+    const saved = localStorage.getItem('projects');
+    return saved ? JSON.parse(saved) : [];
   });
 
+  const [showModal, setShowModal] = useState(false);
+  const [editingIndex, setEditingIndex] = useState(null);
+  const [formData, setFormData] = useState({ name: '', description: '' });
+  const navigate = useNavigate();
+
   useEffect(() => {
-    console.log('Projects updated:', projects);
+    localStorage.setItem('projects', JSON.stringify(projects));
   }, [projects]);
 
   const handleClick = () => {
     setFormData({ name: '', description: '' });
-    setEditingIndex(null); 
+    setEditingIndex(null);
     setShowModal(true);
   };
 
@@ -31,39 +33,39 @@ const Projects = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     if (editingIndex !== null) {
       const updated = [...projects];
-      updated[editingIndex] = formData;
+      updated[editingIndex] = { ...formData, tasks: updated[editingIndex].tasks || [] };
       setProjects(updated);
-    } else {
-      if (projects.length < 4) {
-        setProjects((prev) => [...prev, formData]);
-      }
+    } else if (projects.length < 4) {
+      setProjects([...projects, { ...formData, tasks: [] }]);
     }
-
     setFormData({ name: '', description: '' });
-    setEditingIndex(null);
     handleClose();
   };
 
-  const handleDelete = (project) => {
-    const filtered = projects.filter((p) => p.name !== project.name);
-    setProjects(filtered);
+  const handleDelete = (index) => {
+    const updated = projects.filter((_, i) => i !== index);
+    setProjects(updated);
   };
 
-  const handleModify = (project, index) => {
-    setFormData(project);
+  const handleModify = (index) => {
+    setFormData(projects[index]);
     setEditingIndex(index);
     setShowModal(true);
+  };
+
+  const handleAddTask = (index) => {
+    navigate(`/add-task/${index}`);
+  };
+
+  const handleViewTasks = (index) => {
+    navigate(`/view-tasks/${index}`);
   };
 
   const actionBar = (
@@ -112,20 +114,21 @@ const Projects = () => {
       >
         Add a Project
       </Button>
-
       {projects.map((project, index) => (
         <ProjectItem
           key={index}
           name={project.name}
           description={project.description}
-          onDelete={() => handleDelete(project)}
-          onModify={() => handleModify(project, index)}
+          onDelete={() => handleDelete(index)}
+          onModify={() => handleModify(index)}
+          onAddTask={() => handleAddTask(index)}
+          onView={() => handleViewTasks(index)}
         />
       ))}
-
       {showModal && modal}
     </div>
   );
 };
 
 export default Projects;
+

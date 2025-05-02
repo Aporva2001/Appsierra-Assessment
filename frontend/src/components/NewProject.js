@@ -1,50 +1,49 @@
-import React, { useEffect } from 'react'
+import React, { useEffect } from 'react';
 import Box from '@mui/material/Box';
-import ReactDOM from 'react-dom'
+import ReactDOM from 'react-dom';
 
+const NewProject = ({ onClose, actionBar, children }) => {
+  useEffect(() => {
+    // Disable background scroll
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
 
-const NewProject = ({onClose,actionBar,children}) => {
-    useEffect(() => {
-        // Disable background scroll
-        const originalOverflow = document.body.style.overflow;
-        document.body.style.overflow = 'hidden';
-    
-        // Re-enable on unmount
-        return () => {
-          document.body.style.overflow = originalOverflow;
-        };
-      }, []);
-return ReactDOM.createPortal(
-<div>
-        <Box
-        onClick= {onClose}
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, []);
+
+  return ReactDOM.createPortal(
+    <Box
+      onClick={onClose}
       sx={{
-        position: 'absolute',
-        top: 0,
-        right: 0,
-        bottom: 0,
-        left: 0,
-        backgroundColor: 'grey.300', 
-        opacity: 0.8,
-      }}
-    />
-        <Box
-      sx={{
-        position: 'absolute',
-        top: 100,    
-        right: 400,
-        bottom: 160,
-        left: 400,
-        padding: 10, 
-        backgroundColor: 'white',
+        position: 'fixed',
+        inset: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1300,
       }}
     >
-       {children}
-       {actionBar}
-        </Box>
-    </div>,
+      <Box
+        onClick={(e) => e.stopPropagation()} // Prevent modal close when clicking inside
+        sx={{
+          backgroundColor: 'white',
+          borderRadius: 2,
+          padding: 4,
+          maxWidth: '90vw',
+          width: 500,
+          maxHeight: '90vh',
+          overflowY: 'auto',
+        }}
+      >
+        {children}
+        {actionBar}
+      </Box>
+    </Box>,
     document.querySelector('.modal-container')
-);
-}
+  );
+};
 
-export default NewProject
+export default NewProject;
