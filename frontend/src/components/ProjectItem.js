@@ -10,17 +10,36 @@ import {
 
 function ProjectItem({ name, description, onView, onAddTask, onModify, onDelete }) {
   return (
-    <Card sx={{ maxWidth: 500, m: 2, boxShadow: 3 }}>
+    <Card
+      sx={{
+        width: '100%',
+        minWidth: 300,
+        maxWidth: 600,
+        m: 'auto',
+        boxShadow: 4,
+        borderRadius: 2,
+      }}
+    >
       <CardContent>
-        <Typography variant="h6" component="div" gutterBottom>
+        <Typography variant="h5" component="div" gutterBottom>
           {name}
         </Typography>
         <Typography variant="body2" color="text.secondary">
           {description}
         </Typography>
       </CardContent>
+
       <CardActions>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            width: '100%',
+            px: 1,
+            gap: 1,
+          }}
+        >
           <Box>
             <Button size="small" variant="outlined" onClick={onView} sx={{ mr: 1 }}>
               View
@@ -29,6 +48,7 @@ function ProjectItem({ name, description, onView, onAddTask, onModify, onDelete 
               Add Task
             </Button>
           </Box>
+
           <Box>
             <Button
               size="small"

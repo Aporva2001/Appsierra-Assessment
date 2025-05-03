@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import NewProject from '../components/NewProject';
-import { Box, Stack, TextField } from '@mui/material';
+import { Box, Grid, Stack, TextField } from '@mui/material';
 import ProjectItem from '../components/ProjectItem';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Projects = () => {
+  const token= localStorage.getItem('token')
+
   const [projects, setProjects] = useState(() => {
     const saved = localStorage.getItem('projects');
     return saved ? JSON.parse(saved) : [];
@@ -16,15 +19,32 @@ const Projects = () => {
   const [formData, setFormData] = useState({ name: '', description: '' });
   const navigate = useNavigate();
 
+ useEffect(()=>{
+    if(!token){
+      navigate("/login");
+    return;
+    }
+
+    axios.get('http://localhost:8080/view-projects',{
+      headers: {
+        "Authorization": "Bearer "+token,
+        "Content-Type": 'application/json'
+      }
+    })
+  },[token,navigate])
+
   useEffect(() => {
     localStorage.setItem('projects', JSON.stringify(projects));
   }, [projects]);
 
-  const handleClick = () => {
+  if(!token)
+    return null;
+
+  function handleClick() {
     setFormData({ name: '', description: '' });
     setEditingIndex(null);
     setShowModal(true);
-  };
+  }
 
   const handleClose = () => {
     setShowModal(false);
@@ -45,8 +65,18 @@ const Projects = () => {
     } else if (projects.length < 4) {
       setProjects([...projects, { ...formData, tasks: [] }]);
     }
-    setFormData({ name: '', description: '' });
-    handleClose();
+    axios.post('http://localhost:8080/add-project',formData,{
+      headers: {
+       "Authorization": "Bearer "+token,
+        "Content-Type": 'application/json'
+      }
+    }).then(response =>{
+      setFormData({ name: '', description: '' });
+      handleClose();
+    })
+    .catch(err =>{
+      console.log(err)
+    })
   };
 
   const handleDelete = (index) => {
@@ -105,29 +135,37 @@ const Projects = () => {
   );
 
   return (
-    <div>
-      <h1>Projects</h1>
-      <Button
-        variant="contained"
-        onClick={handleClick}
-        disabled={projects.length >= 4 && editingIndex === null}
-      >
-        Add a Project
-      </Button>
-      {projects.map((project, index) => (
-        <ProjectItem
-          key={index}
-          name={project.name}
-          description={project.description}
-          onDelete={() => handleDelete(index)}
-          onModify={() => handleModify(index)}
-          onAddTask={() => handleAddTask(index)}
-          onView={() => handleViewTasks(index)}
-        />
-      ))}
+    <Box sx={{ p: 4 }}>
+      <Box sx={{ textAlign: 'center', mb: 4 }}>
+        <h1>Projects</h1>
+        <Button
+          variant="contained"
+          onClick={handleClick}
+          disabled={projects.length >= 4 && editingIndex === null}
+        >
+          Add a Project
+        </Button>
+      </Box>
+  
+      <Grid container spacing={3}>
+        {projects.map((project, index) => (
+          <Grid item xs={12} sm={6} md={2} key={index}>
+            <ProjectItem
+              name={project.name}
+              description={project.description}
+              onDelete={() => handleDelete(index)}
+              onModify={() => handleModify(index)}
+              onAddTask={() => handleAddTask(index)}
+              onView={() => handleViewTasks(index)}
+            />
+          </Grid>
+        ))}
+      </Grid>
+  
       {showModal && modal}
-    </div>
+    </Box>
   );
+  
 };
 
 export default Projects;
