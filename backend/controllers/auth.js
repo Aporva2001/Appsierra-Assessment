@@ -1,58 +1,63 @@
-const User = require("../models/user")
-const bcrypt= require('bcryptjs')
-const jwt= require('jsonwebtoken')
+const User = require("../models/user");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
+exports.getSignupController = (req, res, next) => {
+  res.send("<h1>This is signup route</h1>");
+};
 
-exports.getSignupController = (req,res,next)=> {
-    res.send("<h1>This is signup route</h1>")
-}
+exports.getLoginController = (req, res, next) => {
+  res.send("<h1>This is login page</h1>");
+};
 
-exports.getLoginController = (req, res, next) =>{
-    res.send("<h1>This is login page</h1>")
-}
+exports.postSignupController = async (req, res, next) => {
+  try {
+    const { email, password, name, country } = req.body;
 
-exports.postSignupController = async (req, res, next) =>{
-    console.log(req.body);
-    const {email, password, name, country} = req.body;
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.json({ message: "User already exists!", existedUser: 1 });
+    }
 
-    const hashedPw= await bcrypt.hash(password,12)
+    const hashedPw = await bcrypt.hash(password, 12);
 
-    const user= new User({
-        email: email,
-        password: hashedPw,
-        name: name,
-        country: country
-    })
+    const newUser = new User({
+      email,
+      password: hashedPw,
+      name,
+      country,
+    });
 
-    user.save().then(result =>{
-        console.log("User created successfully", result);
-        res.json({ message: "User created successfully", userId: result._id });
-    })
-    .catch(err => {
-        console.log(err)
-    })
-}
+    const result = await newUser.save();
+    console.log("User created successfully", result);
+    return res.json({ message: "User created successfully", userId: result._id, existedUser: 0 });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
 
-exports.postLoginController = (req, res, next) =>{
-    const {email, password} = req.body;
+exports.postLoginController = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
 
-    User.findOne({email})
-    .then(user =>{
-        if(!user)
-            throw new Error('User does not exists');
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.json({ message: "User does not exist", existingUser: 0});
+    }
 
-        bcrypt.compare(password, user.password)
-        .then(result =>{
-            if(!result)
-                throw new Error('Email/password incorrect');
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Email or password incorrect" });
+    }
 
-            const token = jwt.sign({id: user._id.toString()},'somesupersecretsecret',{
-                expiresIn: "1h"})
+    const token = jwt.sign({ id: user._id.toString() }, "somesupersecretsecret", {
+      expiresIn: "1h",
+    });
 
-        res.json({userId: user._id, token: token})
-        })
-        .catch(err =>{
-            console.log(err)
-        })
-    })
-}
+    return res.json({ userId: user._id, token, existingUser: 1 });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
