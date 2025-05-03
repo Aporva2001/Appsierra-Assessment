@@ -37,6 +37,10 @@ const LoginForm = () => {
         if (!existedUser) {
             setExistingUserAlert(true);  
           } else {
+            console.log(response.data)
+            localStorage.setItem("userId",response.data.userId);
+            localStorage.setItem("token", response.data.token);
+            
             navigate("/projects");       
           }
     })
