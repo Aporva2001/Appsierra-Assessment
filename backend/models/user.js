@@ -18,7 +18,11 @@ const userSchema= new Schema({
     country: {
         type: String,
         required: true
-    }
+    },
+    projects: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Project'
+    }] 
 });
 
 module.exports = mongoose.model('User',userSchema)

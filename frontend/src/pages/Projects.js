@@ -4,8 +4,11 @@ import NewProject from '../components/NewProject';
 import { Box, Stack, TextField } from '@mui/material';
 import ProjectItem from '../components/ProjectItem';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Projects = () => {
+  const token= localStorage.getItem('token')
+
   const [projects, setProjects] = useState(() => {
     const saved = localStorage.getItem('projects');
     return saved ? JSON.parse(saved) : [];
@@ -16,15 +19,32 @@ const Projects = () => {
   const [formData, setFormData] = useState({ name: '', description: '' });
   const navigate = useNavigate();
 
+ useEffect(()=>{
+    if(!token){
+      navigate("/login");
+    return;
+    }
+
+    axios.get('http://localhost:8080/view-projects',{
+      headers: {
+        "Authorization": "Bearer "+token,
+        "Content-Type": 'application/json'
+      }
+    })
+  },[token,navigate])
+
   useEffect(() => {
     localStorage.setItem('projects', JSON.stringify(projects));
   }, [projects]);
 
-  const handleClick = () => {
+  if(!token)
+    return null;
+
+  function handleClick() {
     setFormData({ name: '', description: '' });
     setEditingIndex(null);
     setShowModal(true);
-  };
+  }
 
   const handleClose = () => {
     setShowModal(false);
@@ -45,8 +65,18 @@ const Projects = () => {
     } else if (projects.length < 4) {
       setProjects([...projects, { ...formData, tasks: [] }]);
     }
-    setFormData({ name: '', description: '' });
-    handleClose();
+    axios.post('http://localhost:8080/add-project',formData,{
+      headers: {
+       "Authorization": "Bearer "+token,
+        "Content-Type": 'application/json'
+      }
+    }).then(response =>{
+      setFormData({ name: '', description: '' });
+      handleClose();
+    })
+    .catch(err =>{
+      console.log(err)
+    })
   };
 
   const handleDelete = (index) => {
