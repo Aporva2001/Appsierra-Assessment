@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import NewProject from '../components/NewProject';
-import { Box, Stack, TextField } from '@mui/material';
+import { Box, Grid, Stack, TextField } from '@mui/material';
 import ProjectItem from '../components/ProjectItem';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -135,29 +135,37 @@ const Projects = () => {
   );
 
   return (
-    <div>
-      <h1>Projects</h1>
-      <Button
-        variant="contained"
-        onClick={handleClick}
-        disabled={projects.length >= 4 && editingIndex === null}
-      >
-        Add a Project
-      </Button>
-      {projects.map((project, index) => (
-        <ProjectItem
-          key={index}
-          name={project.name}
-          description={project.description}
-          onDelete={() => handleDelete(index)}
-          onModify={() => handleModify(index)}
-          onAddTask={() => handleAddTask(index)}
-          onView={() => handleViewTasks(index)}
-        />
-      ))}
+    <Box sx={{ p: 4 }}>
+      <Box sx={{ textAlign: 'center', mb: 4 }}>
+        <h1>Projects</h1>
+        <Button
+          variant="contained"
+          onClick={handleClick}
+          disabled={projects.length >= 4 && editingIndex === null}
+        >
+          Add a Project
+        </Button>
+      </Box>
+  
+      <Grid container spacing={3}>
+        {projects.map((project, index) => (
+          <Grid item xs={12} sm={6} md={2} key={index}>
+            <ProjectItem
+              name={project.name}
+              description={project.description}
+              onDelete={() => handleDelete(index)}
+              onModify={() => handleModify(index)}
+              onAddTask={() => handleAddTask(index)}
+              onView={() => handleViewTasks(index)}
+            />
+          </Grid>
+        ))}
+      </Grid>
+  
       {showModal && modal}
-    </div>
+    </Box>
   );
+  
 };
 
 export default Projects;
