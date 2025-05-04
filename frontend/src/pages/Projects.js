@@ -192,14 +192,27 @@ const Projects = () => {
   return (
     <Box sx={{ p: 4 }}>
       <Box sx={{ textAlign: 'center', mb: 4 }}>
-        <Typography variant="h4">Projects</Typography>
+        <Typography variant="h4" sx={{ mb: 2 }}>Projects</Typography>
         <Button
-          variant="contained"
-          onClick={handleClick}
-          disabled={projects.length >= 4 && editingIndex === null}
-        >
-          Add a Project
-        </Button>
+  variant="contained"
+  onClick={handleClick}
+  disabled={projects.length >= 4 && editingIndex === null}
+  sx={{
+    mt: 2,
+    backgroundColor: '#1976d2',
+    '&:hover': {
+      backgroundColor: '#115293',
+    },
+    textTransform: 'none',
+    fontWeight: 'bold',
+    px: 3,
+    py: 1,
+    fontSize: '1rem',
+    borderRadius: 2,
+  }}
+>
+  ➕ Create New Project
+</Button>
       </Box>
 
       {projects.length === 0 ? (
