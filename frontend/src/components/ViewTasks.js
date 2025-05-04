@@ -12,6 +12,7 @@ import {
   Paper,
   CircularProgress,
 } from '@mui/material';
+import TaskItem from './TaskItem';
 
 const ViewTasks = () => {
   const location = useLocation();
@@ -81,17 +82,15 @@ const ViewTasks = () => {
       {tasks.length > 0 ? (
         <Paper elevation={3}>
           <List>
-            {tasks.map((task, index) => (
-              <React.Fragment key={task._id || index}>
-                <ListItem>
-                  <ListItemText
-                    primary={`Task ${index + 1}: ${task.title || 'Untitled'}`}
-                    secondary={task.description || 'No description'}
-                  />
-                </ListItem>
-                {index < tasks.length - 1 && <Divider />}
-              </React.Fragment>
-            ))}
+          {tasks.map((task, index) => (
+  <Box key={task._id || index} mb={2}>
+    <TaskItem
+      task={{ ...task, title: `Task ${index + 1}: ${task.title || 'Untitled'}` }}
+      onEdit={(task) => console.log('Edit:', task)}
+      onDelete={(id) => console.log('Delete:', id)}
+    />
+  </Box>
+))}
           </List>
         </Paper>
       ) : (
