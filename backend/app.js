@@ -1,6 +1,7 @@
 const express= require('express')
 const authRoutes= require('./routes/auth')
 const projectRoutes= require('./routes/projects')
+const taskRoutes= require('./routes/tasks')
 
 const mongoose = require('mongoose')
 const cors= require('cors')
@@ -21,6 +22,7 @@ app.use(express.urlencoded({extended: true}))
 
 app.use(authRoutes)
 app.use(projectRoutes)
+app.use(taskRoutes)
 
 mongoose.connect('mongodb+srv://password_2001:password_2001@cluster0.ucqxscj.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
 .then(app.listen(8080, ()=>{

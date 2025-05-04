@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   TextField,
@@ -8,11 +8,20 @@ import {
   Typography,
   Box,
 } from '@mui/material';
+import axios from 'axios'
 
 const NewTask = () => {
+  const token = localStorage.getItem('token');
   const navigate = useNavigate();
   const { id } = useParams();
+  console.log(id)
+  useEffect(()=>{
+    if(!token){
+      navigate('/login')
+      return
+    }
 
+  })
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -29,13 +38,36 @@ const NewTask = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const index = Number(id);
-    const projects = JSON.parse(localStorage.getItem('projects')) || [];
-    const project = projects[index];
-    project.tasks = project.tasks || [];
-    project.tasks.push(formData);
-    projects[index] = project;
-    localStorage.setItem('projects', JSON.stringify(projects));
-    navigate(`/view-tasks/${index}`);
+    // const projects = JSON.parse(localStorage.getItem('projects')) || [];
+    // const project = projects[index];
+    // project.tasks = project.tasks || [];
+    // project.tasks.push(formData);
+    console.log(formData)
+    
+    axios.post(`http://localhost:8080/add-task/${id}`,formData,{
+      headers: {
+        "Authorization" : "Bearer "+ token,
+        "Content-Type": "application/json"
+      }
+    })
+    .then(response =>{
+      console.log(response.data)
+      const {taskId, projectId} = response.data;
+      console.log(projectId)
+      setFormData({
+      title: '',
+      description: '',
+      status: '',
+      createdAt: '',
+      completedAt: '',
+      })
+      // projects[index] = project;
+      // localStorage.setItem('projects', JSON.stringify(projects));
+      navigate(`/view-tasks/${projectId}`,{state: {
+        projectId: response.data.projectId,
+        projectName: response.data.projectName
+      }});
+    })
   };
 
   return (

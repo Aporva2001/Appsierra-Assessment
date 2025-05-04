@@ -8,14 +8,18 @@ import {
   Box,
 } from '@mui/material';
 
-function ProjectItem({ name, description, onView, onAddTask, onModify, onDelete }) {
+const ProjectItem = ({ name, description, onView, onAddTask, onModify, onDelete }) => {
+  // Truncate description to 15 characters with ellipsis
+  const truncateDescription = (text, maxLength = 15) => {
+    return text.length <= maxLength ? text : `${text.slice(0, maxLength)}...`;
+  };
+
   return (
     <Card
       sx={{
         width: '100%',
-        minWidth: 300,
-        maxWidth: 600,
-        m: 'auto',
+        maxWidth: 400,
+        mx: 'auto',
         boxShadow: 4,
         borderRadius: 2,
       }}
@@ -25,9 +29,7 @@ function ProjectItem({ name, description, onView, onAddTask, onModify, onDelete 
           {name}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          {
-            description.length <= 10 ? description : description.substr(0,15).concat("...")
-          }
+          {truncateDescription(description)}
         </Typography>
       </CardContent>
 
@@ -43,10 +45,19 @@ function ProjectItem({ name, description, onView, onAddTask, onModify, onDelete 
           }}
         >
           <Box>
-            <Button size="small" variant="outlined" onClick={onView} sx={{ mr: 1 }}>
+            <Button
+              size="small"
+              variant="outlined"
+              onClick={onView}
+              sx={{ mr: 1 }}
+            >
               View
             </Button>
-            <Button size="small" variant="outlined" onClick={onAddTask}>
+            <Button
+              size="small"
+              variant="outlined"
+              onClick={onAddTask}
+            >
               Add Task
             </Button>
           </Box>
@@ -74,6 +85,6 @@ function ProjectItem({ name, description, onView, onAddTask, onModify, onDelete 
       </CardActions>
     </Card>
   );
-}
+};
 
 export default ProjectItem;

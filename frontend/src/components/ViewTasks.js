@@ -1,65 +1,102 @@
-import React from 'react';
-import { useLocation } from 'react-router-dom';
+// ViewTasks.jsx
+import React, { useEffect, useState } from 'react';
+import { useLocation, useParams } from 'react-router-dom';
+import axios from 'axios';
 import {
   Box,
-  Card,
-  CardContent,
   Typography,
   List,
   ListItem,
   ListItemText,
   Divider,
-  Paper
+  Paper,
+  CircularProgress,
 } from '@mui/material';
 
 const ViewTasks = () => {
   const location = useLocation();
-  const projectData = location.state;
+  const projectId = location.state.projectId
+  const token= localStorage.getItem('token')
+  console.log(projectId)
+  const projectName = location.state?.projectName || 'Unnamed Project';
+  const [tasks, setTasks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  if (!projectData) {
-    return <Typography variant="h6" color="error">No project data provided.</Typography>;
+  useEffect(() => {
+    if (!projectId || !token) {
+      setError('No project ID provided.');
+      setLoading(false);
+      return;
+    }
+
+    const fetchTasks = async () => {
+      try {
+        const res = await axios.get(`http://localhost:8080/view-tasks/${projectId}`,{
+          headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+          }
+        });
+        if (res.data && Array.isArray(res.data.tasks)) {
+          setTasks(res.data.tasks);
+        } else {
+          setError('Invalid response format');
+        }
+      } catch (err) {
+        console.error(err);
+        setError('Failed to fetch tasks.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTasks();
+  }, [projectId]);
+
+  if (loading) {
+    return (
+      <Box sx={{ p: 4 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ p: 4 }}>
+        <Typography variant="h6" color="error">
+          {error}
+        </Typography>
+      </Box>
+    );
   }
 
   return (
     <Box sx={{ p: 4 }}>
       <Typography variant="h4" gutterBottom>
-        {projectData.name}
+        Tasks for Project: {projectName}
       </Typography>
 
-      <Card sx={{ mb: 4, backgroundColor: '#f5f5f5' }}>
-        <CardContent>
-          <Typography variant="h6" color="text.primary">
-            {projectData.name}
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
-            {projectData.description}
-          </Typography>
-        </CardContent>
-      </Card>
-
-      <Typography variant="h5" gutterBottom>
-        Tasks
-      </Typography>
-
-      {projectData.tasks && projectData.tasks.length > 0 ? (
+      {tasks.length > 0 ? (
         <Paper elevation={3}>
           <List>
-            {projectData.tasks.map((task, index) => (
-              <React.Fragment key={index}>
+            {tasks.map((task, index) => (
+              <React.Fragment key={task._id || index}>
                 <ListItem>
                   <ListItemText
                     primary={`Task ${index + 1}: ${task.title || 'Untitled'}`}
                     secondary={task.description || 'No description'}
                   />
                 </ListItem>
-                {index < projectData.tasks.length - 1 && <Divider />}
+                {index < tasks.length - 1 && <Divider />}
               </React.Fragment>
             ))}
           </List>
         </Paper>
       ) : (
         <Typography variant="body1" color="text.secondary">
-          No tasks added to this project.
+          No tasks found for this project.
         </Typography>
       )}
     </Box>

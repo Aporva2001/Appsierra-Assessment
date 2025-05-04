@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import Button from '@mui/material/Button';
-import NewProject from '../components/NewProject';
-import { Box, Grid, Stack, TextField, Typography } from '@mui/material';
-import ProjectItem from '../components/ProjectItem';
+import {
+  Box, Grid, Stack, TextField, Typography, Button
+} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+
+import NewProject from '../components/NewProject';
+import ProjectItem from '../components/ProjectItem';
 
 const Projects = () => {
   const token = localStorage.getItem('token');
@@ -15,24 +17,29 @@ const Projects = () => {
   const [editingIndex, setEditingIndex] = useState(null);
   const [formData, setFormData] = useState({ name: '', description: '' });
 
+  // Fetch projects on component mount
   useEffect(() => {
     if (!token) {
       navigate("/login");
       return;
     }
 
-    // Fetch projects
-    axios.get('http://localhost:8080/projects', {
-      headers: {
-        "Authorization": "Bearer " + token,
-        "Content-Type": 'application/json'
+    const fetchProjects = async () => {
+      try {
+        const res = await axios.get('http://localhost:8080/projects', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          }
+        });
+        setProjects(res.data.projects || []);
+      } catch (err) {
+        console.error("Error fetching projects:", err);
       }
-    })
-    .then(res => {
-      setProjects(res.data.projects || []);
-    })
-    .catch(err => console.error("Error fetching projects:", err));
-  }, [token, navigate]);
+    };
+
+    fetchProjects();
+  }, [navigate, token]);
 
   const handleClick = () => {
     setFormData({ name: '', description: '' });
@@ -52,39 +59,32 @@ const Projects = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       if (editingIndex !== null) {
-        const updatedProject = { ...formData, tasks: projects[editingIndex]?.tasks || [] };
+        // Update project
+        const projectToUpdate = projects[editingIndex];
+        const updatedProject = {
+          ...formData,
+          tasks: projectToUpdate.tasks || [],
+          p_id: projectToUpdate._id,
+        };
 
-        const res = await axios.get(`http://localhost:8080/get-project/${formData.name}`, {
+        await axios.put('http://localhost:8080/update-project', updatedProject, {
           headers: {
-            "Authorization": "Bearer " + token,
-            "Content-Type": 'application/json'
-          }
-        });
-
-        const projectId = res.data.p_id;
-
-        await axios.put('http://localhost:8080/update-project', {
-          ...updatedProject,
-          p_id: projectId
-        }, {
-          headers: {
-            "Authorization": "Bearer " + token,
-            "Content-Type": 'application/json'
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           }
         });
 
         const updatedProjects = [...projects];
-        updatedProjects[editingIndex] = { ...updatedProject, _id: projectId };
+        updatedProjects[editingIndex] = { ...updatedProject, _id: projectToUpdate._id };
         setProjects(updatedProjects);
-
       } else if (projects.length < 4) {
+        // Add new project
         const res = await axios.post('http://localhost:8080/add-project', formData, {
           headers: {
-            "Authorization": "Bearer " + token,
-            "Content-Type": 'application/json'
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           }
         });
 
@@ -101,42 +101,50 @@ const Projects = () => {
 
   const handleDelete = async (index) => {
     const projectId = projects[index]?._id;
-
-    if (!projectId) {
-      console.error("Cannot delete: project ID is undefined");
-      return;
-    }
+    if (!projectId) return;
 
     try {
-      console.log("Deleting project with ID:", projectId);
-
       await axios.delete(`http://localhost:8080/delete-project/${projectId}`, {
         headers: {
-          "Authorization": "Bearer " + token,
+          "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json"
         }
       });
 
-      const updated = projects.filter((_, i) => i !== index);
-      setProjects(updated);
+      setProjects(projects.filter((_, i) => i !== index));
     } catch (err) {
       console.error("Error deleting project:", err);
     }
   };
 
   const handleModify = (index) => {
-    setFormData(projects[index]);
+    setFormData({
+      name: projects[index].name,
+      description: projects[index].description
+    });
     setEditingIndex(index);
     setShowModal(true);
   };
 
-  const handleAddTask = (index) => {
-    navigate(`/add-task/${projects[index]._id}`);
+  const handleAddTask = (projectId) => {
+    console.log(projectId)
+    navigate(`/add-task/${projectId}`);
   };
 
-  const handleViewTasks = (index) => {
-    navigate(`/view-tasks/${projects[index]._id}`,{
-      state: projects[index]
+  const handleViewTasks = (projectId) => {
+    const project = projects.find(p => p._id === projectId);
+    console.log(project)
+    console.log(project._id)
+    if (!project) {
+      console.error("Project not found");
+      return;
+    }
+
+    navigate(`/view-tasks/${projectId}`, {
+      state: {
+        projectId: project._id,
+        projectName: project.name
+      }
     });
   };
 
@@ -179,7 +187,7 @@ const Projects = () => {
   return (
     <Box sx={{ p: 4 }}>
       <Box sx={{ textAlign: 'center', mb: 4 }}>
-        <h1>Projects</h1>
+        <Typography variant="h4">Projects</Typography>
         <Button
           variant="contained"
           onClick={handleClick}
@@ -196,14 +204,14 @@ const Projects = () => {
       ) : (
         <Grid container spacing={3}>
           {projects.map((project, index) => (
-            <Grid item xs={12} sm={6} md={2} key={index}>
+            <Grid item xs={12} sm={6} md={4} key={project._id}>
               <ProjectItem
                 name={project.name}
                 description={project.description}
                 onDelete={() => handleDelete(index)}
                 onModify={() => handleModify(index)}
-                onAddTask={() => handleAddTask(index)}
-                onView={() => handleViewTasks(index)}
+                onAddTask={() => handleAddTask(project._id)}
+                onView={() => handleViewTasks(project._id)}
               />
             </Grid>
           ))}
