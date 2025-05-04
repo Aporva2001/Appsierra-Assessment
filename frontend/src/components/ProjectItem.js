@@ -25,7 +25,9 @@ function ProjectItem({ name, description, onView, onAddTask, onModify, onDelete 
           {name}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          {description}
+          {
+            description.length <= 10 ? description : description.substr(0,15).concat("...")
+          }
         </Typography>
       </CardContent>
 
