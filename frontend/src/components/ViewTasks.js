@@ -75,7 +75,7 @@ const ViewTasks = () => {
   return (
     <Box sx={{ p: 4 }}>
       <Typography variant="h4" gutterBottom>
-        Tasks for Project: {projectName}
+        Tasks for Project - {projectName}
       </Typography>
 
       {tasks.length > 0 ? (

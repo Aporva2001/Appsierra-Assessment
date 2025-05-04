@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import {
   TextField,
   MenuItem,
@@ -13,7 +13,9 @@ import axios from 'axios'
 const NewTask = () => {
   const token = localStorage.getItem('token');
   const navigate = useNavigate();
+  // console.log(useParams())
   const { id } = useParams();
+  const projectName= useLocation().state.projectName
   console.log(id)
   useEffect(()=>{
     if(!token){
@@ -73,7 +75,7 @@ const NewTask = () => {
   return (
     <Box sx={{ maxWidth: 600, mx: 'auto', mt: 4 }}>
       <Typography variant="h5" gutterBottom>
-        Add New Task to Project #{id}
+        Add New Task to Project - {projectName}
       </Typography>
       <form onSubmit={handleSubmit}>
         <Stack spacing={3}>

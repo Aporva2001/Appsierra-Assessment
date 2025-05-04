@@ -127,8 +127,13 @@ const Projects = () => {
   };
 
   const handleAddTask = (projectId) => {
-    console.log(projectId)
-    navigate(`/add-task/${projectId}`);
+    const project = projects.find(p => p._id === projectId);
+    console.log(project)
+    navigate(`/add-task/${projectId}`,{
+      state: {
+        projectName: project.name
+      }
+    });
   };
 
   const handleViewTasks = (projectId) => {
