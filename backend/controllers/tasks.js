@@ -61,61 +61,24 @@ exports.getViewTask = async (req, res, next) => {
   }
 };
 
-exports.editTaskById = (req, res, next) => {
-  const taskId = req.params.id;
-  const { title, description, status, createdAt, completedAt } = req.body;
+exports.editTaskById = (req, res, next) =>{
+    const taskId= req.params.id;
+    const {title, description, status, createdAt,completedAt} = req.body;
 
-  Task.findByIdAndUpdate(taskId)
-    .then(task => {
-      task.title = title;
-      task.description = description;
-      task.status = status;
-      task.createdAt = createdAt;
-      task.completedAt = completedAt;
+    Task.findByIdAndUpdate(taskId)
+    .then(task =>{
+      task.title= title;
+      task.description= description;
+      task.status= status;
+      task.createdAt= createdAt;
+      task.completedAt= completedAt;
 
       return task.save();
     })
-    .then(result => {
-      return res.json({ message: "Task updated successfully" })
+    .then(result =>{
+      return res.json({message: "Task updated successfully"})
     })
-    .catch(err => {
+    .catch(err =>{
       console.log(err);
     })
 }
-
-exports.deleteTaskById = (req, res, next) => {
-  const taskId = req.params.id.split('@')[0];
-  const projectId = req.params.id.split('@')[1];
-
-  console.log(taskId)
-  console.log(projectId)
-
-    Task.findByIdAndDelete(taskId)
-      .then((result) => {
-        if (!result) {
-    return res.status(404).json({ message: 'Task not found.' });
-  }
-
-    Project.findById(projectId)
-    .then(project =>{
-      if(!project)
-        throw new Error('Project does not exist')
-
-      project.tasks = project.tasks.filter((t =>{
-        return t._id.toString() !== taskId.toString()
-      }))
-
-      return project.save();
-    })
-    .then(result =>{
-      res.status(200).json({ message: 'Task deleted successfully.', deletedTask: result });
-    })
-
-  })
-      .catch((err) => {
-        console.error('Error deleting task:', err);
-        res.status(500).json({ message: 'Failed to delete task.', error: err.message });
-      });
-};
-
-

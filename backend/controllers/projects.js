@@ -69,12 +69,49 @@ exports.getViewProjects = async (req, res, next) => {
   const userId = req.user.id;
 
   try {
-    const user = await User.findById(userId).populate("projects");
+    const user = await User.findById(userId).populate({
+      path: "projects",
+      populate: {
+        path: "tasks",
+      },
+    });
+
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    return res.status(200).json({ projects: user.projects });
+    const projectsWithStatusCounts = user.projects.map((project) => {
+      let completed = 0;
+      let notStarted = 0;
+      let inProgress = 0;
+
+      project.tasks.forEach((task) => {
+        switch (task.status) {
+          case "Completed":
+            completed++;
+            break;
+          case "Not started":
+            notStarted++;
+            break;
+          case "In progress":
+            inProgress++;
+            break;
+        }
+      });
+
+      return {
+        projectId: project._id,
+        projectName: project.name,
+        description: project.description,
+        totalTasks: project.tasks.length,
+        completedTasks: completed,
+        notStartedTasks: notStarted,
+        inProgressTasks: inProgress,
+      };
+    });
+    // console.log(project)
+    // console.log(projectsWithStatusCounts)
+    return res.status(200).json({ projects: projectsWithStatusCounts });
 
   } catch (err) {
     console.error("Error fetching projects:", err);

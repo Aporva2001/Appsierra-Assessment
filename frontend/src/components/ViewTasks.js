@@ -35,7 +35,7 @@ const ViewTasks = () => {
       try {
         const res = await axios.get(`http://localhost:8080/view-tasks/${projectId}`, {
           headers: {
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
         });
@@ -61,28 +61,6 @@ const ViewTasks = () => {
       state: { taskData: task },
     });
   };
-  
-  const handleDeleteTask = (task) =>{
-    const taskId= task._id;
-    const projectId= task.projectId;
-    axios.delete(`http://localhost:8080/delete-task/${taskId}@${projectId}`,{
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      }
-    })
-    .then(response =>{
-      console.log(response.data)
-      const updatedTasks = tasks.filter((task)=>{
-        return task._id !== taskId
-      })
-      setTasks(updatedTasks)
-    })
-    .catch(err =>{
-      console.log(err)
-    })
-
-  }
 
   if (loading) {
     return (
@@ -127,7 +105,7 @@ const ViewTasks = () => {
                     title: `Task ${index + 1}: ${task.title || 'Untitled'}`,
                   }}
                   onEdit={() => handleEditTask(task)}
-                  onDelete={() => handleDeleteTask(task)}
+                  onDelete={(id) => console.log('Delete:', id)}
                 />
                 {index !== tasks.length - 1 && <Divider sx={{ my: 2 }} />}
               </Box>

@@ -16,6 +16,7 @@ const Projects = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
   const [formData, setFormData] = useState({ name: '', description: '' });
+  // const [countCompletedProjects, setCountCompletedProjects] = useState(0)
 
   // Fetch projects on component mount
   useEffect(() => {
@@ -32,12 +33,13 @@ const Projects = () => {
             "Content-Type": "application/json",
           }
         });
+        console.log(res.data)
+        // get the count of completed tasks here and the total tasks also
         setProjects(res.data.projects || []);
       } catch (err) {
         console.error("Error fetching projects:", err);
       }
     };
-
     fetchProjects();
   }, [navigate, token]);
 
@@ -155,7 +157,7 @@ const Projects = () => {
   };
 
   const actionBar = (
-    <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
+    <Box sx={{ display:'flex', justifyContent: 'flex-end', mt: 3 }}>
       <Button variant="contained" color="success" type="submit">
         {editingIndex !== null ? 'Update' : 'Add'}
       </Button>
@@ -215,7 +217,7 @@ const Projects = () => {
   ➕ Create New Project
 </Button>
       </Box>
-
+{/* {console.log(projects)} */}
       {projects.length === 0 ? (
         <Typography variant="h6" align="center" sx={{ mt: 5 }}>
           No Projects Added
@@ -225,7 +227,7 @@ const Projects = () => {
           {projects.map((project, index) => (
             <Grid item xs={12} sm={6} md={4} key={project._id}>
               <ProjectItem
-                name={project.name}
+                name={project.projectName}
                 description={project.description}
                 onDelete={() => handleDelete(index)}
                 onModify={() => handleModify(index)}
