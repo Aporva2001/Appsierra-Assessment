@@ -64,10 +64,12 @@ const NewTask = () => {
       completedAt: '',
       })
       // projects[index] = project;
+      console.log(response.data.description)
       // localStorage.setItem('projects', JSON.stringify(projects));
       navigate(`/view-tasks/${projectId}`,{state: {
         projectId: response.data.projectId,
-        projectName: response.data.projectName
+        projectName: response.data.projectName,
+        description: response.data.description
       }});
     })
   };

@@ -8,7 +8,7 @@ import {
   Box,
 } from '@mui/material';
 
-const ProjectItem = ({ name, description, onView, onAddTask, onModify, onDelete }) => {
+const ProjectItem = ({ name, description, onView, onAddTask, onModify, onDelete,completedTasks,inProgressTasks,notStartedTasks,totalTasks }) => {
   // Truncate description to 15 characters with ellipsis
   const truncateDescription = (text, maxLength = 15) => {
     return text.length <= maxLength ? text : `${text.slice(0, maxLength)}...`;
@@ -24,6 +24,12 @@ const ProjectItem = ({ name, description, onView, onAddTask, onModify, onDelete 
         borderRadius: 2,
       }}
     >
+      <p>
+        {completedTasks}
+        {inProgressTasks}
+        {notStartedTasks}
+        {totalTasks}
+      </p>
       <CardContent>
         <Typography variant="h5" component="div" gutterBottom>
           {name}

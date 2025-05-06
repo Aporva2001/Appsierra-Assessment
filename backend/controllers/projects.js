@@ -37,14 +37,16 @@ exports.postAddProjects = async (req, res, next) => {
 // Update Existing Project
 exports.putUpdateProjects = async (req, res, next) => {
   try {
-    const { p_id, name, description, tasks } = req.body;
+    console.log(req.body)
 
-    if (!p_id) {
-      return res.status(400).json({ message: "Project ID (p_id) is required" });
+    const { projectId, name, description, tasks } = req.body;
+
+    if (!projectId) {
+      return res.status(400).json({ message: "Project ID is required" });
     }
 
     const updatedProject = await Project.findByIdAndUpdate(
-      p_id,
+      projectId,
       { name, description, tasks },
       { new: true }
     );
@@ -90,10 +92,10 @@ exports.getViewProjects = async (req, res, next) => {
           case "Completed":
             completed++;
             break;
-          case "Not started":
+          case "Not Started":
             notStarted++;
             break;
-          case "In progress":
+          case "In Progress":
             inProgress++;
             break;
         }

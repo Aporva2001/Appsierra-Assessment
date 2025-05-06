@@ -17,7 +17,8 @@ const ViewTasks = () => {
   const navigate = useNavigate();
   const projectId = location.state?.projectId;
   const projectName = location.state?.projectName || 'Unnamed Project';
-  const projectDescription = location.state?.projectDescription || 'No description provided';
+  console.log(location.state);
+  const projectDescription = location.state?.description || 'No description provided';
   const token = localStorage.getItem('token');
 
   const [tasks, setTasks] = useState([]);
@@ -57,11 +58,26 @@ const ViewTasks = () => {
   }, [projectId, token]);
 
   const handleEditTask = (task) => {
+    console.log(task)
     navigate(`/edit-task/${task._id}`, {
       state: { taskData: task },
     });
   };
+  const handleDeleteTask = (task) =>{
+    axios.delete(`http://localhost:8080/delete-task/${task._id}@${task.projectId}`,{
+      headers:{
+        "Authorization": `Bearer ${token}`,
+            'Content-Type': 'application/json',
+      }
+    })
+    .then((response) =>{
+      let updatedTasks= tasks.filter((t) =>{
+        return t._id !== task._id
+      })
 
+      setTasks(updatedTasks)
+    })
+  }
   if (loading) {
     return (
       <Box sx={{ p: 4, display: 'flex', justifyContent: 'center' }}>
@@ -105,7 +121,7 @@ const ViewTasks = () => {
                     title: `Task ${index + 1}: ${task.title || 'Untitled'}`,
                   }}
                   onEdit={() => handleEditTask(task)}
-                  onDelete={(id) => console.log('Delete:', id)}
+                  onDelete={(id) => handleDeleteTask(task)}
                 />
                 {index !== tasks.length - 1 && <Divider sx={{ my: 2 }} />}
               </Box>

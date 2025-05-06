@@ -25,7 +25,7 @@ const EditTask = () => {
   }, [token, navigate]);
 
   const [formData, setFormData] = useState({
-    title: taskData.title.split(':')[1],
+    title: taskData.title,
     description: taskData.description,
     status: taskData.status,
     createdAt: taskData.createdAt,
@@ -55,7 +55,7 @@ const EditTask = () => {
   return (
     <Box sx={{ maxWidth: 600, mx: 'auto', mt: 4 }}>
       <Typography variant="h5" gutterBottom>
-        Update Task - {taskData.title.split(':')[1]}
+        Update Task - {taskData.title}
       </Typography>
       <form onSubmit={handleSubmit}>
         <Stack spacing={3}>

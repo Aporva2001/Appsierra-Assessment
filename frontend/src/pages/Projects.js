@@ -33,7 +33,7 @@ const Projects = () => {
             "Content-Type": "application/json",
           }
         });
-        console.log(res.data)
+        console.log(res.data.projects)
         // get the count of completed tasks here and the total tasks also
         setProjects(res.data.projects || []);
       } catch (err) {
@@ -61,26 +61,32 @@ const Projects = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+  
     try {
       if (editingIndex !== null) {
-        // Update project
+        // Update existing project
         const projectToUpdate = projects[editingIndex];
         const updatedProject = {
           ...formData,
           tasks: projectToUpdate.tasks || [],
-          p_id: projectToUpdate._id,
+          _id: projectToUpdate.projectId, // backend likely expects _id
         };
-
-        await axios.put('http://localhost:8080/update-project', updatedProject, {
+  
+        const response = await axios.put('http://localhost:8080/update-project', updatedProject, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           }
         });
-
-        const updatedProjects = [...projects];
-        updatedProjects[editingIndex] = { ...updatedProject, _id: projectToUpdate._id };
-        setProjects(updatedProjects);
+  
+        if (response.status === 200 && response.data?.updatedProject) {
+          const updatedProjects = [...projects];
+          updatedProjects[editingIndex] = response.data.updatedProject;
+          setProjects(updatedProjects);
+        } else {
+          console.error("Unexpected update response:", response.data);
+        }
+  
       } else if (projects.length < 4) {
         // Add new project
         const res = await axios.post('http://localhost:8080/add-project', formData, {
@@ -89,20 +95,26 @@ const Projects = () => {
             "Content-Type": "application/json",
           }
         });
-
-        const newProject = res.data.project;
-        setProjects(prev => [...prev, newProject]);
+  
+        if (res.status === 201 && res.data?.project) {
+          setProjects(prev => [...prev, res.data.project]);
+        } else {
+          console.error("Unexpected add response:", res.data);
+        }
       }
-
+  
       setFormData({ name: '', description: '' });
       handleClose();
+  
     } catch (err) {
-      console.error("Error during project submit:", err);
+      console.error("Error during project submit:", err.response?.data || err.message);
     }
   };
+  
+  
 
   const handleDelete = async (index) => {
-    const projectId = projects[index]?._id;
+    const projectId = projects[index]?.projectId;
     if (!projectId) return;
 
     try {
@@ -120,8 +132,9 @@ const Projects = () => {
   };
 
   const handleModify = (index) => {
+    console.log(projects[index])
     setFormData({
-      name: projects[index].name,
+      name: projects[index].projectName,
       description: projects[index].description
     });
     setEditingIndex(index);
@@ -129,19 +142,19 @@ const Projects = () => {
   };
 
   const handleAddTask = (projectId) => {
-    const project = projects.find(p => p._id === projectId);
+    const project = projects.find(p => p.projectId === projectId);
     console.log(project)
     navigate(`/add-task/${projectId}`,{
       state: {
-        projectName: project.name
+        projectName: project.projectName
       }
     });
   };
 
   const handleViewTasks = (projectId) => {
-    const project = projects.find(p => p._id === projectId);
+    const project = projects.find(p => p.projectId === projectId);
     console.log(project)
-    console.log(project._id)
+    // console.log(project._id)
     if (!project) {
       console.error("Project not found");
       return;
@@ -149,9 +162,9 @@ const Projects = () => {
 
     navigate(`/view-tasks/${projectId}`, {
       state: {
-        projectId: project._id,
-        projectName: project.name,
-        projectDescription: project.description
+        projectId: project.projectId,
+        projectName: project.projectName,
+        description: project.description
       }
     });
   };
@@ -225,14 +238,18 @@ const Projects = () => {
       ) : (
         <Grid container spacing={3}>
           {projects.map((project, index) => (
-            <Grid item xs={12} sm={6} md={4} key={project._id}>
+            <Grid item xs={12} sm={6} md={4} key={project.projectId}>
               <ProjectItem
                 name={project.projectName}
                 description={project.description}
                 onDelete={() => handleDelete(index)}
                 onModify={() => handleModify(index)}
-                onAddTask={() => handleAddTask(project._id)}
-                onView={() => handleViewTasks(project._id)}
+                onAddTask={() => handleAddTask(project.projectId)}
+                onView={() => handleViewTasks(project.projectId)}
+                completedTasks= {project.completedTasks}
+                inProgressTasks= {project.inProgressTasks}
+                notStartedTasks= {project.notStartedTasks}
+                totalTasks= {project.totalTasks}
               />
             </Grid>
           ))}

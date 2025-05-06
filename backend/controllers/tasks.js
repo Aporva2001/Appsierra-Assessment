@@ -30,7 +30,8 @@ exports.postAddTask = async (req, res, next) => {
       message: "Task created successfully",
       taskId: savedTask._id,
       projectId: projectId,
-      projectName: project.name
+      projectName: project.name,
+      description: project.description
     });
   } catch (err) {
     console.error("Error adding task:", err);
@@ -82,3 +83,26 @@ exports.editTaskById = (req, res, next) =>{
       console.log(err);
     })
 }
+
+exports.deleteTaskById = async (req, res, next) => {
+  try {
+    const [taskId, projectId] = req.params.id.split('@');
+
+    // Delete the task
+    await Task.findByIdAndDelete(taskId);
+
+    // Update the project to remove the task reference
+    const project = await Project.findById(projectId);
+    if (!project) {
+      return res.status(404).json({ message: "Project not found" });
+    }
+
+    project.tasks = project.tasks.filter(t => t.toString() !== taskId);
+    await project.save();
+
+    return res.json({ message: "Task deleted successfully" });
+  } catch (err) {
+    console.error("Error deleting task:", err);
+    return res.status(500).json({ message: "Server error while deleting task" });
+  }
+};
