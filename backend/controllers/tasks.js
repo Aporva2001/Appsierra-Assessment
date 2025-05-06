@@ -60,3 +60,25 @@ exports.getViewTask = async (req, res, next) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+exports.editTaskById = (req, res, next) =>{
+    const taskId= req.params.id;
+    const {title, description, status, createdAt,completedAt} = req.body;
+
+    Task.findByIdAndUpdate(taskId)
+    .then(task =>{
+      task.title= title;
+      task.description= description;
+      task.status= status;
+      task.createdAt= createdAt;
+      task.completedAt= completedAt;
+
+      return task.save();
+    })
+    .then(result =>{
+      return res.json({message: "Task updated successfully"})
+    })
+    .catch(err =>{
+      console.log(err);
+    })
+}

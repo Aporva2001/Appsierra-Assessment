@@ -148,7 +148,8 @@ const Projects = () => {
     navigate(`/view-tasks/${projectId}`, {
       state: {
         projectId: project._id,
-        projectName: project.name
+        projectName: project.name,
+        projectDescription: project.description
       }
     });
   };

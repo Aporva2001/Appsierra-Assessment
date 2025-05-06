@@ -1,44 +1,45 @@
-// ViewTasks.jsx
 import React, { useEffect, useState } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import {
   Box,
   Typography,
   List,
-  ListItem,
-  ListItemText,
-  Divider,
   Paper,
   CircularProgress,
+  Divider,
+  Stack,
 } from '@mui/material';
 import TaskItem from './TaskItem';
 
 const ViewTasks = () => {
   const location = useLocation();
-  const projectId = location.state.projectId
-  const token= localStorage.getItem('token')
-  console.log(projectId)
+  const navigate = useNavigate();
+  const projectId = location.state?.projectId;
   const projectName = location.state?.projectName || 'Unnamed Project';
+  const projectDescription = location.state?.projectDescription || 'No description provided';
+  const token = localStorage.getItem('token');
+
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
     if (!projectId || !token) {
-      setError('No project ID provided.');
+      setError('No project ID or token provided.');
       setLoading(false);
       return;
     }
 
     const fetchTasks = async () => {
       try {
-        const res = await axios.get(`http://localhost:8080/view-tasks/${projectId}`,{
+        const res = await axios.get(`http://localhost:8080/view-tasks/${projectId}`, {
           headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-          }
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
         });
+
         if (res.data && Array.isArray(res.data.tasks)) {
           setTasks(res.data.tasks);
         } else {
@@ -53,11 +54,17 @@ const ViewTasks = () => {
     };
 
     fetchTasks();
-  }, [projectId]);
+  }, [projectId, token]);
+
+  const handleEditTask = (task) => {
+    navigate(`/edit-task/${task._id}`, {
+      state: { taskData: task },
+    });
+  };
 
   if (loading) {
     return (
-      <Box sx={{ p: 4 }}>
+      <Box sx={{ p: 4, display: 'flex', justifyContent: 'center' }}>
         <CircularProgress />
       </Box>
     );
@@ -74,23 +81,35 @@ const ViewTasks = () => {
   }
 
   return (
-    <Box sx={{ p: 4 }}>
-      <Typography variant="h4" gutterBottom>
-        Tasks for Project - {projectName}
-      </Typography>
+    <Box sx={{ p: 4, maxWidth: 900, mx: 'auto' }}>
+      <Stack spacing={1} mb={4}>
+        <Typography variant="h4" fontWeight="bold">
+          Tasks for Project
+        </Typography>
+        <Typography variant="h6" color="primary">
+          {projectName}
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          {projectDescription}
+        </Typography>
+      </Stack>
 
       {tasks.length > 0 ? (
-        <Paper elevation={3}>
-          <List>
-          {tasks.map((task, index) => (
-  <Box key={task._id || index} mb={2}>
-    <TaskItem
-      task={{ ...task, title: `Task ${index + 1}: ${task.title || 'Untitled'}` }}
-      onEdit={(task) => console.log('Edit:', task)}
-      onDelete={(id) => console.log('Delete:', id)}
-    />
-  </Box>
-))}
+        <Paper elevation={3} sx={{ p: 2 }}>
+          <List disablePadding>
+            {tasks.map((task, index) => (
+              <Box key={task._id || index} mb={2}>
+                <TaskItem
+                  task={{
+                    ...task,
+                    title: `Task ${index + 1}: ${task.title || 'Untitled'}`,
+                  }}
+                  onEdit={() => handleEditTask(task)}
+                  onDelete={(id) => console.log('Delete:', id)}
+                />
+                {index !== tasks.length - 1 && <Divider sx={{ my: 2 }} />}
+              </Box>
+            ))}
           </List>
         </Paper>
       ) : (
