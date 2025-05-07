@@ -26,7 +26,7 @@ const Projects = () => {
 
     const fetchProjects = async () => {
       try {
-        const res = await axios.get('http://localhost:8080/projects', {
+        const res = await axios.get(`${process.env.REACT_APP_API_URI}/projects`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -70,7 +70,7 @@ const Projects = () => {
         };
         // console.log(updatedProject)
 
-        const response = await axios.put('http://localhost:8080/update-project', updatedProject, {
+        const response = await axios.put(`${process.env.REACT_APP_API_URI}/update-project`, updatedProject, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -90,7 +90,7 @@ const Projects = () => {
       } else if (projects.length < 4) {
         // Add new project
         // console.log(formData)
-        const res = await axios.post('http://localhost:8080/add-project', formData, {
+        const res = await axios.post(`${process.env.REACT_APP_API_URI}/add-project`, formData, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -129,7 +129,7 @@ const Projects = () => {
     if (!projectId) return;
 
     try {
-      await axios.delete(`http://localhost:8080/delete-project/${projectId}`, {
+      await axios.delete(`${process.env.REACT_APP_API_URI}/delete-project/${projectId}`, {
         headers: {
           "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json"

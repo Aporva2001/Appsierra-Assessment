@@ -41,7 +41,7 @@ const NewTask = () => {
     e.preventDefault();
     const index = Number(id);
     
-    axios.post(`http://localhost:8080/add-task/${id}`,formData,{
+    axios.post(`${process.env.REACT_APP_API_URI}/add-task/${id}`,formData,{
       headers: {
         "Authorization" : "Bearer "+ token,
         "Content-Type": "application/json"

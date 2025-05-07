@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 const express= require('express')
 const authRoutes= require('./routes/auth')
 const projectRoutes= require('./routes/projects')
@@ -11,7 +13,7 @@ const app= express();
 app.use(cors())
 
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: `${process.env.REACT_FRONTEND_URI}`,
     credentials: true,
     methods: "GET, POST, PUT, PATCH, DELETE, OPTIONS"
 }))
@@ -24,8 +26,8 @@ app.use(authRoutes)
 app.use(projectRoutes)
 app.use(taskRoutes)
 
-mongoose.connect('mongodb+srv://password_2001:password_2001@cluster0.ucqxscj.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
-.then(app.listen(8080, ()=>{
+mongoose.connect(`${process.env.MONGODB_URI}`)
+.then(app.listen(process.env.BACKEND_PORT, ()=>{
     console.log("Database connected successfully")
 }))
 .catch(err =>{

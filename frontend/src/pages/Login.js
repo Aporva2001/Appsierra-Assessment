@@ -30,7 +30,7 @@ const LoginForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     // console.log('Login submitted:', formData);
-    axios.post('http://localhost:8080/login',formData)
+    axios.post(`${process.env.REACT_APP_API_URI}/login`,formData)
     .then(response =>{
         const existedUser = response.data.existingUser;
         // console.log(existedUser)

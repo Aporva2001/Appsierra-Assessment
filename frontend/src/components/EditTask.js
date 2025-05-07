@@ -40,7 +40,7 @@ const EditTask = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
       // console.log(formData);
-      axios.put(`http://localhost:8080/edit-task/${id}`,formData,{
+      axios.put(`${process.env.REACT_APP_API_URI}/edit-task/${id}`,formData,{
         headers:{
             "Authorization": "Bearer "+token,
             "Content-Type": "application/json"

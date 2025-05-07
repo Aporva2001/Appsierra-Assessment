@@ -46,7 +46,7 @@ const SignupForm = () => {
     e.preventDefault();
     // console.log('Form submitted:', formData);
 
-    axios.post('http://localhost:8080', formData)
+    axios.post(`${process.env.REACT_APP_API_URI}`, formData)
       .then(response => {
         const existedUser = response.data.existedUser;
 

@@ -34,7 +34,7 @@ const ViewTasks = () => {
 
     const fetchTasks = async () => {
       try {
-        const res = await axios.get(`http://localhost:8080/view-tasks/${projectId}`, {
+        const res = await axios.get(`${process.env.REACT_APP_API_URI}/view-tasks/${projectId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
@@ -64,7 +64,7 @@ const ViewTasks = () => {
     });
   };
   const handleDeleteTask = (task) =>{
-    axios.delete(`http://localhost:8080/delete-task/${task._id}@${task.projectId}`,{
+    axios.delete(`${process.env.REACT_APP_API_URI}/delete-task/${task._id}@${task.projectId}`,{
       headers:{
         "Authorization": `Bearer ${token}`,
             'Content-Type': 'application/json',

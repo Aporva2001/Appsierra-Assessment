@@ -11,7 +11,6 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 function App() {
   const location = useLocation();
   const navigate = useNavigate();
-
   const showLogout = location.pathname !== "/login" && location.pathname !== "/";
   const showProjectsButton = location.pathname !== "/projects" && location.pathname !== "/login" && location.pathname !== "/";
   
