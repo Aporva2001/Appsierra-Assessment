@@ -3,13 +3,14 @@ const User = require("../models/user");
 
 // Add New Project
 exports.postAddProjects = async (req, res, next) => {
-  const { name, description } = req.body;
+  const projectName= req.body.name;
+  const description= req.body.description;
   const userId = req.user.id;
 
   try {
     const project = new Project({
-      name,
-      description,
+      name: projectName,
+      description: description,
       user: userId
     });
 
@@ -22,10 +23,16 @@ exports.postAddProjects = async (req, res, next) => {
 
     user.projects.push(savedProject._id);
     await user.save();
+    
+    console.log(savedProject)
 
     return res.status(201).json({
       message: "Project added successfully",
-      project: savedProject
+      project: savedProject,
+      totalTasks: 0,
+      completedTasks: 0,
+      notStartedTasks: 0,
+      inProgressTasks: 0,
     });
 
   } catch (err) {
@@ -39,27 +46,64 @@ exports.putUpdateProjects = async (req, res, next) => {
   try {
     console.log(req.body)
 
-    const { projectId, name, description, tasks } = req.body;
+    // const { projectId, name, description, tasks } = req.body;
+    const projectId= req.body._id;
+    const projectName= req.body.name;
+    const description= req.body.description;
+    const tasks= req.body.tasks;
 
     if (!projectId) {
       return res.status(400).json({ message: "Project ID is required" });
     }
 
-    const updatedProject = await Project.findByIdAndUpdate(
-      projectId,
-      { name, description, tasks },
-      { new: true }
-    );
+    const project = await Project.findById(projectId);
 
-    if (!updatedProject) {
+    if(!project){
       return res.status(404).json({ message: "Project not found" });
     }
+    project.name= projectName;
+    project.description= description;
+    project.tasks= tasks;
 
-    return res.status(200).json({
-      message: "Project updated successfully",
-      project: updatedProject
-    });
+    project.save()
+    .then(project =>{
+      let completed = 0;
+      let notStarted = 0;
+      let inProgress = 0;
 
+      project.tasks.forEach((task) => {
+        switch (task.status) {
+          case "Completed":
+            completed++;
+            break;
+          case "Not Started":
+            notStarted++;
+            break;
+          case "In Progress":
+            inProgress++;
+            break;
+        }
+      });
+      return {
+        projectId: project._id,
+        projectName: project.name,
+        description: project.description,
+        totalTasks: project.tasks.length,
+        completedTasks: completed,
+        notStartedTasks: notStarted,
+        inProgressTasks: inProgress,
+      };
+    })
+    .then(updatedProject =>{
+      if (!updatedProject) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+  
+      return res.status(200).json({
+        message: "Project updated successfully",
+        project: updatedProject,
+      });
+    })
   } catch (err) {
     console.error("Error updating project:", err);
     return res.status(500).json({ message: "Server error", error: err.message });

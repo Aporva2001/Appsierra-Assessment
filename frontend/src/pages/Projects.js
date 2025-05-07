@@ -33,7 +33,7 @@ const Projects = () => {
             "Content-Type": "application/json",
           }
         });
-        console.log(res.data.projects)
+        // console.log(res.data.projects)
         // get the count of completed tasks here and the total tasks also
         setProjects(res.data.projects || []);
       } catch (err) {
@@ -71,33 +71,47 @@ const Projects = () => {
           tasks: projectToUpdate.tasks || [],
           _id: projectToUpdate.projectId, // backend likely expects _id
         };
-  
+        // console.log(updatedProject)
+
         const response = await axios.put('http://localhost:8080/update-project', updatedProject, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           }
         });
-  
-        if (response.status === 200 && response.data?.updatedProject) {
+        console.log(response.data.project)
+        
+        if (response.status === 200 && response.data?.project) {
           const updatedProjects = [...projects];
-          updatedProjects[editingIndex] = response.data.updatedProject;
+          updatedProjects[editingIndex] = response.data.project;
+          console.log(updatedProjects)
           setProjects(updatedProjects);
         } else {
-          console.error("Unexpected update response:", response.data);
+          console.error("Unexpected update response:", response.data.project);
         }
   
       } else if (projects.length < 4) {
         // Add new project
+        console.log(formData)
         const res = await axios.post('http://localhost:8080/add-project', formData, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           }
         });
-  
+        console.log(res.data.project)
+        const newProject = {
+          projectId: res.data.project._id,
+          projectName: res.data.project.name,
+          description: res.data.project.description,
+          totalTasks: 0,
+          inProgressTasks:0,
+          notStartedTasks:0,
+          completedTasks:0
+        }
+        console.log(projects)
         if (res.status === 201 && res.data?.project) {
-          setProjects(prev => [...prev, res.data.project]);
+          setProjects(prev => [...prev, newProject]);
         } else {
           console.error("Unexpected add response:", res.data);
         }
@@ -240,6 +254,7 @@ const Projects = () => {
           {projects.map((project, index) => (
             <Grid item xs={12} sm={6} md={4} key={project.projectId}>
               <ProjectItem
+              key={project.projectId}
                 name={project.projectName}
                 description={project.description}
                 onDelete={() => handleDelete(index)}
