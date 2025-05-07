@@ -1,4 +1,5 @@
 import React from 'react';
+import { green } from '@mui/material/colors';
 import {
   Card,
   CardContent,
@@ -13,7 +14,9 @@ const ProjectItem = ({ name, description, onView, onAddTask, onModify, onDelete,
   const truncateDescription = (text, maxLength = 15) => {
     return text.length <= maxLength ? text : `${text.slice(0, maxLength)}...`;
   };
-
+  const getWidth = (count) => {
+    return totalTasks > 0 ? `${(count / totalTasks) * 100}%` : '0%';
+  };
   return (
     <Card
       sx={{
@@ -24,12 +27,6 @@ const ProjectItem = ({ name, description, onView, onAddTask, onModify, onDelete,
         borderRadius: 2,
       }}
     >
-      <p>
-        {completedTasks}
-        {inProgressTasks}
-        {notStartedTasks}
-        {totalTasks}
-      </p>
       <CardContent>
         <Typography variant="h5" component="div" gutterBottom>
           {name}
@@ -89,6 +86,21 @@ const ProjectItem = ({ name, description, onView, onAddTask, onModify, onDelete,
           </Box>
         </Box>
       </CardActions>
+
+      <Box
+        sx={{
+          display: 'flex',
+          height: 10,
+          width: '100%',
+          mt: 2,
+          borderRadius: 1,
+          overflow: 'hidden',
+        }}
+      >
+        <Box sx={{ width: getWidth(notStartedTasks), backgroundColor: 'red' }} />
+        <Box sx={{ width: getWidth(inProgressTasks), backgroundColor: 'yellow' }} />
+        <Box sx={{ width: getWidth(completedTasks), backgroundColor: green[300] }} />
+      </Box>
     </Card>
   );
 };

@@ -52,7 +52,7 @@ exports.postLoginController = async (req, res, next) => {
     }
 
     const token = jwt.sign({ id: user._id.toString() }, "somesupersecretsecret", {
-      expiresIn: "1h",
+      expiresIn: "5h",
     });
 
     return res.json({ userId: user._id, token, existingUser: 1 });
