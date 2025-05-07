@@ -3,7 +3,9 @@
 A simple Project Management App built using the **MERN stack (MongoDB, Express, React, Node.js)**. It allows users to:
 
 - Register/login securely
-- Create and manage multiple projects (up to 4)
+- Create and manage multiple projects (up to 10)
+- Create and manage tasks for each project
+- Track the status of each project
 
 ---
 
@@ -31,6 +33,8 @@ A simple Project Management App built using the **MERN stack (MongoDB, Express, 
 
 ---
 
+### 💻 For Running Locally
+
 ## 🖥️ Frontend Setup (React)
 
 1. Navigate to the `frontend` folder:
@@ -55,3 +59,11 @@ A simple Project Management App built using the **MERN stack (MongoDB, Express, 
     The backend will run on 
     http://localhost:8080
 
+
+## 🔑 Credentials to use for testing the app:
+   - Email - test@test.com
+   - Password - tester
+
+## 🌐 Deployed Link:
+   [Deployed on Render](https://appsierra-assessment.onrender.com)
+   
