@@ -226,7 +226,7 @@ const Projects = () => {
         <Button
   variant="contained"
   onClick={handleClick}
-  disabled={projects.length >= 4 && editingIndex === null}
+  disabled={projects.length >= 10 && editingIndex === null}
   sx={{
     mt: 2,
     backgroundColor: '#1976d2',
