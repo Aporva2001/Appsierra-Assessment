@@ -250,7 +250,7 @@ const Projects = () => {
           No Projects Added
         </Typography>
       ) : (
-        <Grid container spacing={3}>
+        <Grid container spacing={3} justifyContent="center">
           {projects.map((project, index) => (
             <Grid item xs={12} sm={6} md={4} key={project.projectId}>
               <ProjectItem
