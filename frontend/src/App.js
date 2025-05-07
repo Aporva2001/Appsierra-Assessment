@@ -6,20 +6,40 @@ import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import EditTask from "./components/EditTask";
 import { Button, Box } from "@mui/material";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 function App() {
   const location = useLocation();
   const navigate = useNavigate();
 
   const showLogout = location.pathname !== "/login" && location.pathname !== "/";
-
+  const showProjectsButton = location.pathname !== "/projects" && location.pathname !== "/login" && location.pathname !== "/";
+  
   const handleLogout = () => {
     localStorage.clear()
     navigate("/login");
   };
 
+  const goToProjects = () => {
+    navigate("/projects");
+  };
+
   return (
     <>
+     {showProjectsButton && (
+        <Box
+          sx={{
+            position: "absolute",
+            top: 16,
+            left: 16,
+          }}
+        >
+          <Button variant="contained" color="primary" onClick={goToProjects} startIcon={<ArrowBackIcon />}>
+            Projects
+          </Button>
+        </Box>
+      )}
+
       {showLogout && (
         <Box
     sx={{
