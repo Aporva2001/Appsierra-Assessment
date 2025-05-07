@@ -5,6 +5,7 @@ const Schema= mongoose.Schema;
 const projectSchema = new Schema({
     name: {
         type: String,
+        unique: true,
         required: true
     },
     description: {
@@ -15,7 +16,14 @@ const projectSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: true
-    }
+    },
+    tasks: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Task',
+            required: true
+        }
+    ]
 })
 
 module.exports = mongoose.model('Project',projectSchema)

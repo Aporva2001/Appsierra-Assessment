@@ -25,9 +25,9 @@ function ProjectForm({ onSubmit }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Submitted Data:', formData);
-    onSubmit?.(formData); // Optional onSubmit prop
-    setFormData({ name: '', description: '' }); // Reset form
+    // console.log('Submitted Data:', formData);
+    onSubmit?.(formData); 
+    setFormData({ name: '', description: '' }); 
   };
 
   return (

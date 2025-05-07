@@ -4,7 +4,6 @@ import ReactDOM from 'react-dom';
 
 const NewProject = ({ onClose, actionBar, children }) => {
   useEffect(() => {
-    // Disable background scroll
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
 
@@ -27,7 +26,7 @@ const NewProject = ({ onClose, actionBar, children }) => {
       }}
     >
       <Box
-        onClick={(e) => e.stopPropagation()} // Prevent modal close when clicking inside
+        onClick={(e) => e.stopPropagation()} 
         sx={{
           backgroundColor: 'white',
           borderRadius: 2,

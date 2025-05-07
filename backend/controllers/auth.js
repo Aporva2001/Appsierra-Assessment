@@ -1,3 +1,4 @@
+require('dotenv').config()
 const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -51,8 +52,8 @@ exports.postLoginController = async (req, res, next) => {
       return res.status(401).json({ message: "Email or password incorrect" });
     }
 
-    const token = jwt.sign({ id: user._id.toString() }, "somesupersecretsecret", {
-      expiresIn: "1h",
+    const token = jwt.sign({ id: user._id.toString() }, `${process.env.JWT_SECRET_KEY}`, {
+      expiresIn: "5h",
     });
 
     return res.json({ userId: user._id, token, existingUser: 1 });

@@ -44,9 +44,9 @@ const SignupForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
+    // console.log('Form submitted:', formData);
 
-    axios.post('http://localhost:8080', formData)
+    axios.post(`${process.env.REACT_APP_API_URI}`, formData)
       .then(response => {
         const existedUser = response.data.existedUser;
 
@@ -58,9 +58,9 @@ const SignupForm = () => {
         });
 
         if (existedUser) {
-          setUserExistsAlert(true);  // show alert
+          setUserExistsAlert(true);  
         } else {
-          navigate("/login");       // redirect
+          navigate("/login");       
         }
       })
       .catch(err => {

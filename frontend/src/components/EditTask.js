@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import {
   TextField,
@@ -8,28 +8,28 @@ import {
   Typography,
   Box,
 } from '@mui/material';
-import axios from 'axios'
+import axios from 'axios';
 
-const NewTask = () => {
-  const token = localStorage.getItem('token');
-  const navigate = useNavigate();
-  // console.log(useParams())
+const EditTask = () => {
   const { id } = useParams();
-  const projectName= useLocation().state.projectName
-  // console.log(id)
-  useEffect(()=>{
-    if(!token){
-      navigate('/login')
-      return
-    }
+  const { state } = useLocation();
+  const navigate = useNavigate();
+  const taskData = state.taskData;
 
-  })
+  const token = localStorage.getItem('token');
+
+  useEffect(() => {
+    if (!token) {
+      navigate('/login');
+    }
+  }, [token, navigate]);
+
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    status: '',
-    createdAt: '',
-    completedAt: '',
+    title: taskData.title,
+    description: taskData.description,
+    status: taskData.status,
+    createdAt: taskData.createdAt,
+    completedAt: taskData.completedAt,
   });
 
   const handleChange = (e) => {
@@ -37,42 +37,25 @@ const NewTask = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const index = Number(id);
-    
-    axios.post(`${process.env.REACT_APP_API_URI}/add-task/${id}`,formData,{
-      headers: {
-        "Authorization" : "Bearer "+ token,
-        "Content-Type": "application/json"
-      }
-    })
-    .then(response =>{
-      // console.log(response.data)
-      const {taskId, projectId} = response.data;
-      // console.log(projectId)
-      setFormData({
-      title: '',
-      description: '',
-      status: '',
-      createdAt: '',
-      completedAt: '',
+      // console.log(formData);
+      axios.put(`${process.env.REACT_APP_API_URI}/edit-task/${id}`,formData,{
+        headers:{
+            "Authorization": "Bearer "+token,
+            "Content-Type": "application/json"
+        }
       })
-      // projects[index] = project;
-      // console.log(response.data.description)
-      // localStorage.setItem('projects', JSON.stringify(projects));
-      navigate(`/view-tasks/${projectId}`,{state: {
-        projectId: response.data.projectId,
-        projectName: response.data.projectName,
-        description: response.data.description
-      }});
-    })
+      .then(response =>{
+        // console.log(response.data)
+        navigate('/projects'); 
+      })
   };
 
   return (
     <Box sx={{ maxWidth: 600, mx: 'auto', mt: 4 }}>
       <Typography variant="h5" gutterBottom>
-        Add New Task to Project - {projectName}
+        Update Task - {taskData.title}
       </Typography>
       <form onSubmit={handleSubmit}>
         <Stack spacing={3}>
@@ -127,7 +110,7 @@ const NewTask = () => {
             fullWidth
           />
           <Button variant="contained" color="primary" type="submit">
-            Submit Task
+            Update Task
           </Button>
         </Stack>
       </form>
@@ -135,4 +118,4 @@ const NewTask = () => {
   );
 };
 
-export default NewTask;
+export default EditTask;

@@ -1,3 +1,4 @@
+require('dotenv').config()
 const jwt= require('jsonwebtoken')
 
 exports.isAuth = (req, res, next)=>{
@@ -10,7 +11,7 @@ exports.isAuth = (req, res, next)=>{
         throw new Error('Not Authorized')
 
     try{
-        const decodedToken = jwt.verify(token, 'somesupersecretsecret');
+        const decodedToken = jwt.verify(token, `${process.env.JWT_SECRET_KEY}`);
         req.user= decodedToken;
         next();
     }
