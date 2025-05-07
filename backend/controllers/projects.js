@@ -1,7 +1,6 @@
 const Project = require("../models/project");
 const User = require("../models/user");
 
-// Add New Project
 exports.postAddProjects = async (req, res, next) => {
   const projectName= req.body.name;
   const description= req.body.description;
@@ -24,7 +23,7 @@ exports.postAddProjects = async (req, res, next) => {
     user.projects.push(savedProject._id);
     await user.save();
     
-    console.log(savedProject)
+    // console.log(savedProject)
 
     return res.status(201).json({
       message: "Project added successfully",
@@ -41,10 +40,9 @@ exports.postAddProjects = async (req, res, next) => {
   }
 };
 
-// Update Existing Project
 exports.putUpdateProjects = async (req, res, next) => {
   try {
-    console.log(req.body)
+    // console.log(req.body)
 
     // const { projectId, name, description, tasks } = req.body;
     const projectId= req.body._id;
@@ -110,7 +108,6 @@ exports.putUpdateProjects = async (req, res, next) => {
   }
 };
 
-// View Projects of Logged-In User
 exports.getViewProjects = async (req, res, next) => {
   const userId = req.user.id;
 
@@ -165,7 +162,7 @@ exports.getViewProjects = async (req, res, next) => {
   }
 };
 
-// Get Project ID by Name
+
 exports.getProjectDetails = async (req, res, next) => {
   const name = req.params.name;
 
@@ -186,7 +183,7 @@ exports.getProjectDetails = async (req, res, next) => {
   }
 };
 
-// Delete Project by ID
+
 exports.deleteProject = async (req, res, next) => {
     const projectId = req.params.id;
     const userId = req.user.id;

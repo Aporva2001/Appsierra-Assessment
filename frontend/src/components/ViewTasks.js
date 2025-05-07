@@ -17,7 +17,7 @@ const ViewTasks = () => {
   const navigate = useNavigate();
   const projectId = location.state?.projectId;
   const projectName = location.state?.projectName || 'Unnamed Project';
-  console.log(location.state);
+  // console.log(location.state);
   const projectDescription = location.state?.description || 'No description provided';
   const token = localStorage.getItem('token');
 

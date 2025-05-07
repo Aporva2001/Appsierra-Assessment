@@ -44,7 +44,7 @@ const SignupForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
+    // console.log('Form submitted:', formData);
 
     axios.post('http://localhost:8080', formData)
       .then(response => {
@@ -58,9 +58,9 @@ const SignupForm = () => {
         });
 
         if (existedUser) {
-          setUserExistsAlert(true);  // show alert
+          setUserExistsAlert(true);  
         } else {
-          navigate("/login");       // redirect
+          navigate("/login");       
         }
       })
       .catch(err => {

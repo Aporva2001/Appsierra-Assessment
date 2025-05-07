@@ -18,7 +18,6 @@ const Projects = () => {
   const [formData, setFormData] = useState({ name: '', description: '' });
   // const [countCompletedProjects, setCountCompletedProjects] = useState(0)
 
-  // Fetch projects on component mount
   useEffect(() => {
     if (!token) {
       navigate("/login");
@@ -33,8 +32,6 @@ const Projects = () => {
             "Content-Type": "application/json",
           }
         });
-        // console.log(res.data.projects)
-        // get the count of completed tasks here and the total tasks also
         setProjects(res.data.projects || []);
       } catch (err) {
         console.error("Error fetching projects:", err);
@@ -64,12 +61,12 @@ const Projects = () => {
   
     try {
       if (editingIndex !== null) {
-        // Update existing project
+
         const projectToUpdate = projects[editingIndex];
         const updatedProject = {
           ...formData,
           tasks: projectToUpdate.tasks || [],
-          _id: projectToUpdate.projectId, // backend likely expects _id
+          _id: projectToUpdate.projectId, 
         };
         // console.log(updatedProject)
 
@@ -79,12 +76,12 @@ const Projects = () => {
             "Content-Type": "application/json",
           }
         });
-        console.log(response.data.project)
+        // console.log(response.data.project)
         
         if (response.status === 200 && response.data?.project) {
           const updatedProjects = [...projects];
           updatedProjects[editingIndex] = response.data.project;
-          console.log(updatedProjects)
+          // console.log(updatedProjects)
           setProjects(updatedProjects);
         } else {
           console.error("Unexpected update response:", response.data.project);
@@ -92,14 +89,14 @@ const Projects = () => {
   
       } else if (projects.length < 4) {
         // Add new project
-        console.log(formData)
+        // console.log(formData)
         const res = await axios.post('http://localhost:8080/add-project', formData, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           }
         });
-        console.log(res.data.project)
+        // console.log(res.data.project)
         const newProject = {
           projectId: res.data.project._id,
           projectName: res.data.project.name,
@@ -109,7 +106,7 @@ const Projects = () => {
           notStartedTasks:0,
           completedTasks:0
         }
-        console.log(projects)
+        // console.log(projects)
         if (res.status === 201 && res.data?.project) {
           setProjects(prev => [...prev, newProject]);
         } else {
@@ -146,7 +143,7 @@ const Projects = () => {
   };
 
   const handleModify = (index) => {
-    console.log(projects[index])
+    // console.log(projects[index])
     setFormData({
       name: projects[index].projectName,
       description: projects[index].description
@@ -157,7 +154,7 @@ const Projects = () => {
 
   const handleAddTask = (projectId) => {
     const project = projects.find(p => p.projectId === projectId);
-    console.log(project)
+    // console.log(project)
     navigate(`/add-task/${projectId}`,{
       state: {
         projectName: project.projectName
@@ -167,7 +164,7 @@ const Projects = () => {
 
   const handleViewTasks = (projectId) => {
     const project = projects.find(p => p.projectId === projectId);
-    console.log(project)
+    // console.log(project)
     // console.log(project._id)
     if (!project) {
       console.error("Project not found");

@@ -16,7 +16,7 @@ const NewTask = () => {
   // console.log(useParams())
   const { id } = useParams();
   const projectName= useLocation().state.projectName
-  console.log(id)
+  // console.log(id)
   useEffect(()=>{
     if(!token){
       navigate('/login')
@@ -40,11 +40,6 @@ const NewTask = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const index = Number(id);
-    // const projects = JSON.parse(localStorage.getItem('projects')) || [];
-    // const project = projects[index];
-    // project.tasks = project.tasks || [];
-    // project.tasks.push(formData);
-    console.log(formData)
     
     axios.post(`http://localhost:8080/add-task/${id}`,formData,{
       headers: {
@@ -53,9 +48,9 @@ const NewTask = () => {
       }
     })
     .then(response =>{
-      console.log(response.data)
+      // console.log(response.data)
       const {taskId, projectId} = response.data;
-      console.log(projectId)
+      // console.log(projectId)
       setFormData({
       title: '',
       description: '',
@@ -64,7 +59,7 @@ const NewTask = () => {
       completedAt: '',
       })
       // projects[index] = project;
-      console.log(response.data.description)
+      // console.log(response.data.description)
       // localStorage.setItem('projects', JSON.stringify(projects));
       navigate(`/view-tasks/${projectId}`,{state: {
         projectId: response.data.projectId,

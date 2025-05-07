@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 
 const ProjectItem = ({ name, description, onView, onAddTask, onModify, onDelete,completedTasks,inProgressTasks,notStartedTasks,totalTasks }) => {
-  // Truncate description to 15 characters with ellipsis
+
   const truncateDescription = (text, maxLength = 15) => {
     return text.length <= maxLength ? text : `${text.slice(0, maxLength)}...`;
   };

@@ -39,7 +39,7 @@ const EditTask = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-      console.log(formData);
+      // console.log(formData);
       axios.put(`http://localhost:8080/edit-task/${id}`,formData,{
         headers:{
             "Authorization": "Bearer "+token,
@@ -47,7 +47,7 @@ const EditTask = () => {
         }
       })
       .then(response =>{
-        console.log(response.data)
+        // console.log(response.data)
         navigate('/projects'); 
       })
   };

@@ -1,7 +1,6 @@
 const Task = require("../models/task");
 const Project = require('../models/project');
 
-// POST /add-task/:id
 exports.postAddTask = async (req, res, next) => {
   const { title, description, status, createdAt, completedAt } = req.body;
   const projectId = req.params.id;
@@ -39,7 +38,7 @@ exports.postAddTask = async (req, res, next) => {
   }
 };
 
-// GET /view-tasks/:id
+
 exports.getViewTask = async (req, res, next) => {
   const projectId = req.params.id;
 
@@ -49,7 +48,7 @@ exports.getViewTask = async (req, res, next) => {
     if (!project) {
       return res.status(404).json({ message: 'Project not found' });
     }
-    console.log(project.tasks)
+    // console.log(project.tasks)
 
     res.status(200).json({
       projectId: project._id,
@@ -88,10 +87,9 @@ exports.deleteTaskById = async (req, res, next) => {
   try {
     const [taskId, projectId] = req.params.id.split('@');
 
-    // Delete the task
+
     await Task.findByIdAndDelete(taskId);
 
-    // Update the project to remove the task reference
     const project = await Project.findById(projectId);
     if (!project) {
       return res.status(404).json({ message: "Project not found" });

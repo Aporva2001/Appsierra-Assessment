@@ -3,8 +3,6 @@ const { getSignupController, getLoginController, postSignupController, postLogin
 
 const router= express.Router();
 
-
-
 router.get('/login', getLoginController)
 
 router.post('/login',postLoginController)
